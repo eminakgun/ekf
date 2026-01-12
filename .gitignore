@@ -1,0 +1,20 @@
+# Build directories
+build/
+build_host/
+cmake-build-debug/
+bin/
+lib/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Executables
+demo_app
+*.a
+*.o
