@@ -5,8 +5,14 @@ project(standalone_ekf LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options(-Os -flto -ffunction-sections -fdata-sections)
-add_link_options(-flto -Wl,--gc-sections)
+add_compile_options(-Os -ffunction-sections -fdata-sections)
+add_compile_options(-march=rv64imafd -mabi=lp64d -mcmodel=medany)
+add_compile_options(-specs=htif_nano.specs)
+add_link_options(-Wl,--gc-sections)
+add_link_options(-static)
+add_link_options(-specs=htif_nano.specs)
+# Use htif linker script from Chipyard tests
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${CMAKE_CURRENT_SOURCE_DIR}/../../tests/htif.ld")
 
 # Include directories
 include_directories(
@@ -25,14 +31,14 @@ include_directories(
 )
 
 # Define sources
-file(GLOB_RECURSE EKF_SOURCES "src/ekf/*.cpp")
-file(GLOB_RECURSE MATRIX_SOURCES "src/lib/matrix/*.cpp")
-file(GLOB_RECURSE MATHLIB_SOURCES "src/lib/mathlib/*.cpp")
-file(GLOB_RECURSE GEO_SOURCES "src/lib/geo/*.cpp")
-file(GLOB_RECURSE LATLON_SOURCES "src/lib/lat_lon_alt/*.cpp")
+file(GLOB_RECURSE EKF_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/ekf/*.cpp")
+file(GLOB_RECURSE MATRIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/lib/matrix/*.cpp")
+file(GLOB_RECURSE MATHLIB_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/lib/mathlib/*.cpp")
+file(GLOB_RECURSE GEO_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/lib/geo/*.cpp")
+file(GLOB_RECURSE LATLON_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/lib/lat_lon_alt/*.cpp")
 # Atmosphere is header only usually, but let's check
-file(GLOB_RECURSE ATMOSPHERE_SOURCES "src/lib/atmosphere/*.cpp")
-# file(GLOB_RECURSE WMM_SOURCES "src/lib/world_magnetic_model/*.cpp")
+file(GLOB_RECURSE ATMOSPHERE_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/lib/atmosphere/*.cpp")
+# file(GLOB_RECURSE WMM_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/lib/world_magnetic_model/*.cpp")
 
 # Remove some files that might be problematic or unnecessary
 list(FILTER EKF_SOURCES EXCLUDE REGEX ".*python.*")

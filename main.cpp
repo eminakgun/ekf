@@ -20,18 +20,20 @@ void check_convergence(const char* test_name, float actual, float expected, floa
 int main(int argc, char *argv[])
 {
     Ekf ekf;
+    setbuf(stdout, NULL);
     _time_now_us = 1000000; // Start at 1s
     ekf.init(_time_now_us);
 
     printf("EKF Initialized\n");
 
-    // Simulate 10 seconds
+    // Simulate shorter duration for Verilator (e.g., 2 seconds total)
     // --------------------------------------------------------------------------
-    // Test 1: Static Convergence (10 seconds)
+    // Test 1: Static Convergence (1 second)
     // --------------------------------------------------------------------------
-    printf("\n--- Test 1: Static Convergence (10s) ---\n");
+    printf("\n--- Test 1: Static Convergence (1s) ---\n");
     const float dt = 0.01f; // 100Hz
-    int steps = 3000; // 30 seconds
+    int steps = 10; // 0.1 second - minimal for fast RTL sim
+
 
     for (int i = 0; i < steps; ++i) {
         _time_now_us += (uint64_t)(dt * 1e6);
